@@ -12,12 +12,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### New
+
+### Changed
+
+### Fixed
+
+## 0.8.0 - 2026-11-20
+### New
 - `reportByDomain` sets the report address and the team name per mail
   domain of the account: one line `<domain> <address> [team name]` per
   domain. Config templates 0.1.9 (Classic) and 0.1.2 (Modern).
 - Releases on GitHub carry both zimlet packages.
-
-### Changed
 
 ### Fixed
 - The Classic zimlet now reads `reportTeam`; it always showed the default

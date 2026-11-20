@@ -1,6 +1,6 @@
 {
   "name": "zimlet-spamham",
-  "version": "0.3.1",
+  "version": "0.8.0",
   "private": true,
   "description": "Zimbra zimlets (Classic and Modern) to send a mail to an anti-spam address as SPAM or HAM",
   "scripts": {

@@ -1,4 +1,4 @@
-<zimlet name="ch_oetiker_report_spam_ham_classic" version="0.3.1" label="${msg.label}" description="${msg.description}">
+<zimlet name="ch_oetiker_report_spam_ham_classic" version="0.8.0" label="${msg.label}" description="${msg.description}">
     <include>zsr-core.js</include>
     <include>ch_oetiker_report_spam_ham_classic.js</include>
     <includeCSS>ch_oetiker_report_spam_ham_classic.css</includeCSS>
