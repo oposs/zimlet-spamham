@@ -1,0 +1,53 @@
+name: Release build (local)
+
+# Builds the Classic and the Modern zimlet package of the release and
+# uploads them as release assets.
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: The version being released.
+        type: string
+        required: true
+      ref:
+        description: The release branch head to build.
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  zimlets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: modern/package-lock.json
+
+      - name: Build both zimlet packages
+        run: make RUN= classic modern
+
+      - name: Check the zimlet versions
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          for x in classic/ch_oetiker_report_spam_ham_classic.xml modern/ch_oetiker_report_spam_ham_modern.xml; do
+            grep -q "^<zimlet name=\"[a-z_]*\" version=\"$VERSION\"" "$x" || {
+              echo "::error::$x does not carry version $VERSION"
+              exit 1
+            }
+          done
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-asset-zimlets
+          path: dist/*.zip
+          if-no-files-found: error

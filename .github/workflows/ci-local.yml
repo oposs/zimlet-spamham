@@ -1,0 +1,38 @@
+name: CI (local)
+
+# The repository's own CI jobs, called from ci.yml: the unit tests and the
+# build of both zimlet packages. The Modern zimlet is built with zimlet-cli
+# (npm, Node 24 as in modern/mise.toml); the test of the Modern bundle needs
+# that build, so the tests run after it.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: The commit to test; empty takes the commit that triggered the run.
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: modern/package-lock.json
+
+      - name: Build both zimlet packages
+        run: make RUN= classic modern
+
+      - name: Run the tests
+        run: make test
