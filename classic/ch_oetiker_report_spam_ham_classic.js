@@ -11,7 +11,7 @@ ch_oetiker_report_spam_ham_classic_HandlerObject.prototype.constructor = ch_oeti
 
 ch_oetiker_report_spam_ham_classic_HandlerObject.OP = 'ZHR_REPORT';
 ch_oetiker_report_spam_ham_classic_HandlerObject.CONFIG_NAMES =
-    ['reportAddress', 'serverName', 'hamStripHeaders', 'hamStripSubject'];
+    ['reportAddress', 'reportTeam', 'reportByDomain', 'serverName', 'hamStripHeaders', 'hamStripSubject'];
 ch_oetiker_report_spam_ham_classic_HandlerObject.VIEWS = ['VIEW_CONVLIST', 'VIEW_TRAD', 'VIEW_CONV', 'VIEW_MSG'];
 
 // Message keys of the properties files; ZsrCore.STRINGS_EN is the fallback.
@@ -165,7 +165,7 @@ ch_oetiker_report_spam_ham_classic_HandlerObject.prototype._readConfig = functio
     for (var i = 0; i < names.length; i++) {
         props[names[i]] = this.getConfig(names[i]);
     }
-    return ZsrCore.parseConfig(props);
+    return ZsrCore.parseConfig(props, appCtxt.getActiveAccount().name);
 };
 
 ch_oetiker_report_spam_ham_classic_HandlerObject.prototype._transport = function () {

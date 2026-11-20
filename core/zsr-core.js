@@ -11,6 +11,7 @@ var ZsrCore = (function () {
     var DEFAULTS = {
         reportAddress: 'anti-spam@oetiker.ch',
         reportTeam: 'O+P SpamFilter Patrol',
+        reportByDomain: '',
         serverName: '',
         hamStripHeaders: 'X-Spam-Flag,X-Spam-Status,X-Spam-Level,X-Spam-Score,' +
             'X-Spam-Rule-Report,X-Spam-Checker-Version,X-Spam-RelaysUntrusted,' +
@@ -30,7 +31,36 @@ var ZsrCore = (function () {
         return String(v);
     }
 
-    function parseConfig(props) {
+    function domainOf(address) {
+        var s = String(address);
+        return s.substring(s.lastIndexOf('@') + 1).toLowerCase();
+    }
+
+    /*
+     * reportByDomain: one line per mail domain, "<domain> <address> [team]".
+     * Accounts of a listed domain report to that address and see that team
+     * name (reportTeam when the line has none); all others use reportAddress
+     * and reportTeam. Returns {domain: {address, team}}.
+     */
+    function parseByDomain(text) {
+        var map = {};
+        String(text || '').split(/\r?\n/).forEach(function (line) {
+            var l = line.trim();
+            if (l === '') {
+                return;
+            }
+            var m = /^(\S+)\s+(\S+@\S+)(?:\s+(.*))?$/.exec(l);
+            if (!m) {
+                throw new Error('reportByDomain: invalid line: ' + l);
+            }
+            map[m[1].toLowerCase()] = { address: m[2], team: (m[3] || '').trim() };
+        });
+        return map;
+    }
+
+    // props: the zimlet's global properties; account: the name of the
+    // logged-in account (optional), selects the reportByDomain entry.
+    function parseConfig(props, account) {
         var headers = prop(props, 'hamStripHeaders').split(',')
             .map(function (h) { return h.trim().toLowerCase(); })
             .filter(function (h) { return h !== ''; });
@@ -44,9 +74,18 @@ var ZsrCore = (function () {
                     throw new Error('hamStripSubject: invalid pattern: ' + p);
                 }
             });
+        var address = prop(props, 'reportAddress').trim();
+        var team = prop(props, 'reportTeam').trim();
+        var byDomain = parseByDomain(prop(props, 'reportByDomain'));
+        var key = account ? domainOf(account) : '';
+        var own = Object.prototype.hasOwnProperty.call(byDomain, key) ? byDomain[key] : null;
+        if (own) {
+            address = own.address;
+            team = own.team || team;
+        }
         return {
-            reportAddress: prop(props, 'reportAddress').trim(),
-            reportTeam: prop(props, 'reportTeam').trim(),
+            reportAddress: address,
+            reportTeam: team,
             serverName: (props && props.serverName ? String(props.serverName) : '').trim(),
             stripHeaders: headers,
             stripSubject: patterns
@@ -55,11 +94,6 @@ var ZsrCore = (function () {
 
     // Paths of the system folders a reported mail can come from.
     var FOLDER_PATHS = { '2': '/Inbox', '3': '/Trash', '4': '/Junk' };
-
-    function domainOf(address) {
-        var s = String(address);
-        return s.substring(s.lastIndexOf('@') + 1).toLowerCase();
-    }
 
     /*
      * Body lines follow Zimbra's built-in spam classification report, so

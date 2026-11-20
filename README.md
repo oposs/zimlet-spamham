@@ -96,12 +96,21 @@ the same values:
 |---|---|---|
 | `reportAddress` | `anti-spam@oetiker.ch` | Recipient of the reports |
 | `reportTeam` | `O+P SpamFilter Patrol` | Recipient name shown in the dialog |
+| `reportByDomain` | empty | Recipient per mail domain, see below |
 | `serverName` | empty (host name of the web client) | Server name written into the report |
 | `hamStripHeaders` | `X-Spam-Flag,X-Spam-Status,…` | Headers removed from the HAM copy |
 | `hamStripSubject` | three SPAM subject patterns | Regexes, one per line, removed from the subject of the HAM copy |
 
-An invalid `hamStripSubject` pattern aborts the click with an error message;
-nothing is sent.
+`reportByDomain` holds one line per mail domain:
+`<domain> <address> [team name]`. An account of a listed domain reports to
+that address and sees that team name (`reportTeam` when the line has none);
+all other accounts use `reportAddress` and `reportTeam`:
+
+    <property name="reportByDomain">example.org abuse@example.org Example Abuse Desk
+    example.com spam@example.com</property>
+
+An invalid `reportByDomain` line or `hamStripSubject` pattern aborts the
+click with an error message; nothing is sent.
 
 `zmzimletctl deploy` replaces a stored configuration only when the version
 in `config_template.xml` is higher than the stored one. That version is

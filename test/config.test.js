@@ -41,3 +41,32 @@ test('default strip list covers amavis report headers', () => {
   assert.ok(h.indexOf('x-spam-report') >= 0);
   assert.ok(h.indexOf('x-spam-prev-subject') >= 0);
 });
+
+test('reportByDomain: account domain picks address and team', () => {
+  const props = {
+    reportAddress: 'spam@example.net',
+    reportTeam: 'Example Desk',
+    reportByDomain: 'Example.org  abuse@example.org  Org Abuse Team\n\nexample.com spam@example.com'
+  };
+  const org = Z.parseConfig(props, 'alice@EXAMPLE.ORG');
+  assert.equal(org.reportAddress, 'abuse@example.org');
+  assert.equal(org.reportTeam, 'Org Abuse Team');
+  const com = Z.parseConfig(props, 'bob@example.com');
+  assert.equal(com.reportAddress, 'spam@example.com');
+  assert.equal(com.reportTeam, 'Example Desk', 'no team on the line: reportTeam');
+  const other = Z.parseConfig(props, 'carol@example.ch');
+  assert.equal(other.reportAddress, 'spam@example.net');
+  assert.equal(other.reportTeam, 'Example Desk');
+  assert.equal(Z.parseConfig(props).reportAddress, 'spam@example.net', 'no account: global values');
+});
+
+test('reportByDomain: invalid line throws naming it', () => {
+  assert.throws(() => Z.parseConfig({ reportByDomain: 'example.org' }, 'a@example.org'),
+    /reportByDomain: invalid line: example\.org/);
+  assert.throws(() => Z.parseConfig({ reportByDomain: 'example.org nobody' }, 'a@example.ch'),
+    /reportByDomain: invalid line: example\.org nobody/);
+});
+
+test('reportByDomain defaults to empty', () => {
+  assert.equal(Z.DEFAULTS.reportByDomain, '');
+});

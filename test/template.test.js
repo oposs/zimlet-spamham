@@ -17,7 +17,8 @@ const TEMPLATE = fs.readFileSync(path.join(__dirname, '..', 'classic', 'config_t
 // line (with a higher version) whenever the properties change.
 const SHIPPED = {
   '0.1.7': '956c17718de77afc9236604e432fbc93395601fb11f6d553526d0707334061c8',
-  '0.1.8': '325120eae04cb61f036d0d67e84a1a8ee479950a0366a271b8ef0743cc41c35f'
+  '0.1.8': '325120eae04cb61f036d0d67e84a1a8ee479950a0366a271b8ef0743cc41c35f',
+  '0.1.9': '1cf6dea117c3e109fdf4f18205c6754cd94121fd69ff0e8dd17fb4099f05bedb'
 };
 
 function configVersion() {
@@ -58,7 +59,8 @@ const MODERN = fs.readFileSync(path.join(__dirname, '..', 'modern', 'config_temp
 // Modern config version -> sha256 of its <global> block.
 const SHIPPED_MODERN = {
   '0.1.0': '956c17718de77afc9236604e432fbc93395601fb11f6d553526d0707334061c8',
-  '0.1.1': '325120eae04cb61f036d0d67e84a1a8ee479950a0366a271b8ef0743cc41c35f'
+  '0.1.1': '325120eae04cb61f036d0d67e84a1a8ee479950a0366a271b8ef0743cc41c35f',
+  '0.1.2': '1cf6dea117c3e109fdf4f18205c6754cd94121fd69ff0e8dd17fb4099f05bedb'
 };
 
 test('modern template has the classic global block', () => {

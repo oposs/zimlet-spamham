@@ -1,5 +1,5 @@
 // Global properties of this zimlet's configuration from the account
-// (GetInfo zimlets), parsed by ZsrCore.
+// (GetInfo zimlets), parsed by ZsrCore for the account's mail domain.
 const NAME = 'ch_oetiker_report_spam_ham_modern';
 
 function zimletName(entry) {
@@ -23,7 +23,7 @@ function readConfig(account, core) {
 			}
 		}
 	}
-	return core.parseConfig(props);
+	return core.parseConfig(props, account && account.name);
 }
 
 module.exports = { readConfig, NAME };

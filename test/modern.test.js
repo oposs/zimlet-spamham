@@ -230,3 +230,15 @@ test('locale: the UI language (html lang of the client) wins over the account pr
     if (saved === undefined) delete globalThis.window; else globalThis.window = saved;
   }
 });
+
+test('readConfig applies reportByDomain for the account', () => {
+  const core = require('../core/zsr-core.js');
+  const account = {
+    name: 'x@example.org',
+    zimlets: { zimlet: [zimletEntry('ch_oetiker_report_spam_ham_modern', [
+      { name: 'reportByDomain', content: 'example.org abuse@example.org Org Team' }])] }
+  };
+  const cfg = readConfig(account, core);
+  assert.equal(cfg.reportAddress, 'abuse@example.org');
+  assert.equal(cfg.reportTeam, 'Org Team');
+});

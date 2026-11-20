@@ -385,3 +385,17 @@ test('upload sends the content type and a safe file name', async () => {
   assert.equal(headers['Content-Disposition'],
     'attachment; filename="Gr_sse _x_"; filename*=UTF-8\'\'Gr%C3%BCsse%20%22x%22');
 });
+
+test('_readConfig reads every property and applies reportByDomain', () => {
+  const ctx = load();
+  const H = ctx.ch_oetiker_report_spam_ham_classic_HandlerObject;
+  const keys = vm.runInContext('Object.keys(ZsrCore.DEFAULTS)', ctx);
+  assert.deepEqual(Array.prototype.slice.call(H.CONFIG_NAMES).sort(), Array.prototype.slice.call(keys).sort());
+  ctx.appCtxt.getActiveAccount = function () { return { name: 'x@example.org' }; };
+  const h = new H();
+  const props = { reportTeam: 'Global Team', reportByDomain: 'example.org abuse@example.org Org Team' };
+  h.getConfig = function (name) { return props[name]; };
+  const cfg = h._readConfig();
+  assert.equal(cfg.reportAddress, 'abuse@example.org');
+  assert.equal(cfg.reportTeam, 'Org Team');
+});
