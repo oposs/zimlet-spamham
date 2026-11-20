@@ -1,0 +1,19 @@
+.ImgZhrReport {
+    background: url(report.png) no-repeat;
+    width: 16px;
+    height: 16px;
+}
+.ZhrDialog {
+    max-width: 26em;
+    line-height: 1.35;
+}
+.ZhrDialog p {
+    margin: 0;
+}
+.ZhrChoice {
+    margin-top: 0.6em !important;
+    white-space: nowrap;
+}
+.ZhrChoice label {
+    margin-right: 1.2em;
+}

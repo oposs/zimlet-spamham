@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "ch_oetiker_report_spam_ham_modern",
+  "version": "0.3.1",
+  "description": "Send SPAM|HAM for the Zimbra Modern client",
+  "license": "MIT",
+  "main": "build/index.js",
+  "module": "src/index.js",
+  "scripts": {
+    "build": "zimlet build"
+  },
+  "devDependencies": {
+    "@zimbra/zimlet-cli": "20.0.0"
+  }
+}

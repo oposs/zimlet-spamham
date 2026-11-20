@@ -1,0 +1,11 @@
+<zimletConfig name="ch_oetiker_report_spam_ham_modern" version="0.1.1">
+    <global>
+        <property name="reportAddress">anti-spam@oetiker.ch</property>
+        <property name="reportTeam">O+P SpamFilter Patrol</property>
+        <property name="serverName"></property>
+        <property name="hamStripHeaders">X-Spam-Flag,X-Spam-Status,X-Spam-Level,X-Spam-Score,X-Spam-Rule-Report,X-Spam-Checker-Version,X-Spam-RelaysUntrusted,X-Spam-Report,X-Spam-Prev-Subject</property>
+        <property name="hamStripSubject">^\[\*\*\* SPAM -?[0-9.]+ \*\*\*\]\s*
+^\*\*\*\s*SPAM\s*\*\*\*\s*
+^\[SPAM\]\s*</property>
+    </global>
+</zimletConfig>
