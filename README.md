@@ -1,8 +1,13 @@
 # zimlet-spamham
 
+[![CI](https://github.com/oposs/zimlet-spamham/actions/workflows/ci.yml/badge.svg)](https://github.com/oposs/zimlet-spamham/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/oposs/zimlet-spamham)](https://github.com/oposs/zimlet-spamham/releases/latest)
+
 "Send SPAM|HAM" for the Zimbra web clients (tested on Zimbra 10.1.21): a
 toolbar button in the Classic client and an item in the "More" menu of the
 Modern client.
+
+![The dialog in the Classic client, for a mail in Junk](docs/dialog-classic.png)
 
 A click opens a dialog that names the recipient and offers "Headers only"
 or "Whole mail" (default). Every selected mail is then sent to a
@@ -29,25 +34,24 @@ The two clients need two zimlets:
 
 | Client | Zimlet | Package |
 |---|---|---|
-| Classic | `ch_oetiker_report_spam_ham_classic` | `dist/ch_oetiker_report_spam_ham_classic.zip` |
-| Modern | `ch_oetiker_report_spam_ham_modern` | `dist/ch_oetiker_report_spam_ham_modern.zip` |
+| Classic | `ch_oetiker_report_spam_ham_classic` | `ch_oetiker_report_spam_ham_classic.zip` |
+| Modern | `ch_oetiker_report_spam_ham_modern` | `ch_oetiker_report_spam_ham_modern.zip` |
+
+## Install
+
+Download both packages from the
+[latest release](https://github.com/oposs/zimlet-spamham/releases/latest),
+or build them yourself.
 
 ## Build
 
 Node 24 and npm 11 for the Modern zimlet (`modern/mise.toml` pins them for
-[mise](https://mise.jdx.dev/)):
+[mise](https://mise.jdx.dev/)); the packages land in `dist/`:
 
     make test classic modern
 
-The Modern zimlet is a `@zimbra/zimlet-cli` project. Its entry is replaced
-by `modern/src/compat-entry.js` (see `modern/zimlet.config.js`): Zimbra
-10.1.21 calls `new` on the function passed to `zimlet()`, which fails for
-the arrow function zimlet-cli 20 generates.
-
-The Classic files must stay ES3: Zimbra compiles all Classic zimlets of an
-account into one bundle with yuicompressor 2.4.2, and one syntax error
-breaks every zimlet. `test/es3.test.js` guards this; the real check is
-`java -jar /opt/zimbra/lib/jars/yuicompressor-2.4.2-zimbra.jar --type js <file>`.
+[docs/maintainer-notes.md](docs/maintainer-notes.md) explains the build of
+the Modern zimlet and why the Classic files stay ES3.
 
 ## Prerequisites on the server
 
@@ -73,7 +77,7 @@ moved to the Inbox unchanged and the status message says so.
 `zmzimletctl deploy` also enables the zimlet in COS `default`. Remove it
 there and enable it in the COS that should have it:
 
-    zmzimletctl deploy dist/<zimlet>.zip
+    zmzimletctl deploy <zimlet>.zip
     zmprov mc default -zimbraZimletAvailableZimlets +<zimlet>
     zmprov mc <cos> +zimbraZimletAvailableZimlets +<zimlet>
     zmprov fc cos; zmprov fc zimlet
@@ -87,7 +91,7 @@ client (Ctrl+Shift+R) to see the change.
 The configuration is stored per zimlet name; configure both zimlets with
 the same values:
 
-    zmzimletctl getConfigTemplate dist/<zimlet>.zip > config_template.xml
+    zmzimletctl getConfigTemplate <zimlet>.zip > config_template.xml
     # edit config_template.xml
     zmzimletctl configure config_template.xml
     zmprov fc zimlet

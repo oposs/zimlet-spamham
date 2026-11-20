@@ -1,0 +1,45 @@
+{
+  "moving_major_tag": false,
+  "version_files": [
+    {
+      "path": "package.json",
+      "pattern": "^  \"version\": \"[^\"]*\"",
+      "replacement": "  \"version\": \"$VERSION\"",
+      "verify": "^  \"version\": \"$VERSION\""
+    },
+    {
+      "path": "modern/package.json",
+      "pattern": "^  \"version\": \"[^\"]*\"",
+      "replacement": "  \"version\": \"$VERSION\"",
+      "verify": "^  \"version\": \"$VERSION\""
+    },
+    {
+      "path": "modern/package-lock.json",
+      "pattern": "^  \"name\": \"ch_oetiker_report_spam_ham_modern\",\n  \"version\": \"[^\"]*\"",
+      "replacement": "  \"name\": \"ch_oetiker_report_spam_ham_modern\",\n  \"version\": \"$VERSION\"",
+      "verify": "^  \"name\": \"ch_oetiker_report_spam_ham_modern\",\n  \"version\": \"$VERSION\""
+    },
+    {
+      "path": "modern/package-lock.json",
+      "pattern": "^      \"name\": \"ch_oetiker_report_spam_ham_modern\",\n      \"version\": \"[^\"]*\"",
+      "replacement": "      \"name\": \"ch_oetiker_report_spam_ham_modern\",\n      \"version\": \"$VERSION\"",
+      "verify": "^      \"name\": \"ch_oetiker_report_spam_ham_modern\",\n      \"version\": \"$VERSION\""
+    },
+    {
+      "path": "classic/ch_oetiker_report_spam_ham_classic.xml",
+      "pattern": "^<zimlet name=\"ch_oetiker_report_spam_ham_classic\" version=\"[^\"]*\"",
+      "replacement": "<zimlet name=\"ch_oetiker_report_spam_ham_classic\" version=\"$VERSION\"",
+      "verify": "^<zimlet name=\"ch_oetiker_report_spam_ham_classic\" version=\"$VERSION\""
+    },
+    {
+      "path": "modern/ch_oetiker_report_spam_ham_modern.xml",
+      "pattern": "^<zimlet name=\"ch_oetiker_report_spam_ham_modern\" version=\"[^\"]*\"",
+      "replacement": "<zimlet name=\"ch_oetiker_report_spam_ham_modern\" version=\"$VERSION\"",
+      "verify": "^<zimlet name=\"ch_oetiker_report_spam_ham_modern\" version=\"$VERSION\""
+    }
+  ],
+  "release_assets": [
+    "ch_oetiker_report_spam_ham_classic.zip",
+    "ch_oetiker_report_spam_ham_modern.zip"
+  ]
+}

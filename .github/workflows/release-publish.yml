@@ -1,0 +1,39 @@
+name: Publish release (automatic)
+
+# Tags and publishes the release once its pull request merges.
+#
+# There is deliberately no workflow_dispatch. Publishing is a consequence of
+# merging a release pull request, never something started from a dropdown;
+# a re-run of a failed run reads the same version from CHANGES.md.
+on:
+  push:
+    branches: [main]
+    paths:
+      - CHANGES.md
+
+concurrency:
+  group: release-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    uses: oposs/repo-infra/.github/workflows/ri-publish-tag.yml@v2
+    permissions:
+      contents: write
+      pull-requests: read
+
+  # finalize needs every other job of this file.
+  finalize:
+    needs: [publish]
+    if: needs.publish.outputs.release_id != ''
+    uses: oposs/repo-infra/.github/workflows/ri-publish-finalize.yml@v2
+    permissions:
+      contents: write
+      actions: write
+    with:
+      release_id: ${{ needs.publish.outputs.release_id }}
+      tag: ${{ needs.publish.outputs.tag }}
+      head: ${{ needs.publish.outputs.head }}

@@ -1,0 +1,26 @@
+name: Release build
+
+# Called by Create release PR on the release branch before the pull request
+# exists. The release carries the two zimlet packages, built by the
+# repository's own release-build-local.yml.
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: The version being released.
+        type: string
+        required: true
+      ref:
+        description: The release branch head to build.
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  zimlets:
+    uses: ./.github/workflows/release-build-local.yml
+    with:
+      version: ${{ inputs.version }}
+      ref: ${{ inputs.ref }}
