@@ -16,7 +16,7 @@ MODERN_FILES = modern/ch_oetiker_report_spam_ham_modern.xml modern/config_templa
 	modern/ch_oetiker_report_spam_ham_modern.properties modern/ch_oetiker_report_spam_ham_modern_de.properties
 
 test:
-	node --test test/
+	node --test 'test/*.test.js'
 
 classic: dist/ch_oetiker_report_spam_ham_classic.zip
 

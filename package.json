@@ -4,7 +4,7 @@
   "private": true,
   "description": "Zimbra zimlets (Classic and Modern) to send a mail to an anti-spam address as SPAM or HAM",
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test 'test/*.test.js'"
   },
   "license": "MIT"
 }
