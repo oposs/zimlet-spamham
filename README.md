@@ -7,6 +7,8 @@
 toolbar button in the Classic client and an item in the "More" menu of the
 Modern client.
 
+![The dialog in the Classic client, for a mail in Junk](docs/dialog-classic.png)
+
 A click opens a dialog that names the recipient and offers "Headers only"
 or "Whole mail" (default). Every selected mail is then sent to a
 configured anti-spam address, one report per mail:
