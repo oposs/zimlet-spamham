@@ -1,3 +1,3 @@
-<zimlet name="ch_oetiker_report_spam_ham_modern" version="0.8.0" label="${msg.label}" description="${msg.description}" target="main" zimbraXZimletCompatibleSemVer=">=1.0.0">
+<zimlet name="ch_oetiker_report_spam_ham_modern" version="0.9.0" label="${msg.label}" description="${msg.description}" target="main" zimbraXZimletCompatibleSemVer=">=1.0.0">
     <include>index.js</include>
 </zimlet>

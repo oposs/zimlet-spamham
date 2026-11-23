@@ -14,13 +14,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### New
 
 ### Changed
+
+### Fixed
+
+## 0.9.0 - 2026-11-23
+### Changed
 - The report subject names direction and content:
   `[SPAM Report Full] <server> <account>`, `[SPAM Report Header] …`,
   `[HAM Report Full] …` or `[HAM Report Header] …` (was
   `[ZHR] SPAM|HAM Report …`). Filters on the old `[ZHR]` subject need an
   update.
-
-### Fixed
 
 ## 0.8.0 - 2026-11-20
 ### New
