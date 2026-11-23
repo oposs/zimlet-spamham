@@ -173,7 +173,7 @@ test('send: spam whole mail moves to Junk and refreshes', async () => {
   assert.deepEqual(f.names(), ['GetMsg', 'SendMsg', 'MsgAction']);
   assert.equal(f.reqs[2].body.action.l, '4');
   assert.match(f.reqs[1].body.m.mp[0].content._content, /^Reported-Via: modern$/m);
-  assert.equal(f.reqs[1].body.m.su._content, '[ZHR] SPAM Report zimbra.example.ch a@example.ch');
+  assert.equal(f.reqs[1].body.m.su._content, '[SPAM Report Full] zimbra.example.ch a@example.ch');
   assert.deepEqual(s, { message: '1 sent as SPAM and moved to Junk', failure: false });
   assert.deepEqual(f.refetch, [{ include: 'active' }]);
   assert.equal(r.busy(), false);

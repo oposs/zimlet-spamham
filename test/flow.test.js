@@ -152,7 +152,7 @@ test('spam whole mail: report then move to Junk', async () => {
   const t = fake();
   const r = await Z.reportOne(t, cfg, ctx, spam('30'), 'full');
   assert.deepEqual(names(t), ['SendMsgRequest', 'MsgActionRequest']);
-  assert.equal(t.calls[0].body.m.su._content, '[ZHR] SPAM Report h a@example.ch');
+  assert.equal(t.calls[0].body.m.su._content, '[SPAM Report Full] h a@example.ch');
   assert.deepEqual(json(t.calls[0].body.m.attach), { m: [{ id: '30' }] });
   assert.deepEqual(json(t.calls[1].body), { _jsns: 'urn:zimbraMail', action: { id: '30', op: 'move', l: '4' } });
   assert.deepEqual(json(r), { id: '30', dir: 'spam', ok: true, reportSent: true, stored: false });
