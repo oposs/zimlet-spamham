@@ -21,8 +21,9 @@ configured anti-spam address, one report per mail:
   conversation, only the open message (else the newest one outside Trash,
   Sent and Drafts) is reported.
 
-The report has the subject `[ZHR] SPAM Report <server> <account>` or
-`[ZHR] HAM Report …`, the headers `X-ZSR-Type`, `X-ZSR-Domain` and
+The report has the subject `[SPAM Report Full] <server> <account>`;
+`SPAM` or `HAM` by direction, `Full` or `Header` by the content chosen in the
+dialog. It carries the headers `X-ZSR-Type`, `X-ZSR-Domain` and
 `X-ZSR-Server`, and a body in the format of Zimbra's own spam training
 report (`Classified-As: spam|ham`, `Report-Content: full|headers`). The
 reported mail is attached as `message/rfc822`; with "Headers only" it keeps

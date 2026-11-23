@@ -99,7 +99,7 @@ var ZsrCore = (function () {
      * Body lines follow Zimbra's built-in spam classification report, so
      * filters at the report address that sort on "Classified-As: ham"
      * keep working. The subject is our own:
-     * "[ZHR] SPAM Report <server> <account>" or "[ZHR] HAM Report ...".
+     * "[SPAM|HAM Report Full|Header] <server> <account>".
      *
      * ctx: {account, client: 'classic'|'modern', hostname, msgId,
      *       folderId, now: Date, dir: 'spam'|'ham', content: 'full'|'headers',
@@ -130,7 +130,8 @@ var ZsrCore = (function () {
                 noSave: 1,
                 m: {
                     e: [{ t: 't', a: cfg.reportAddress }],
-                    su: { _content: '[ZHR] ' + (spam ? 'SPAM' : 'HAM') + ' Report ' +
+                    su: { _content: '[' + (spam ? 'SPAM' : 'HAM') + ' Report ' +
+                        (headers ? 'Header' : 'Full') + '] ' +
                         server + ' ' + ctx.account },
                     header: [
                         { name: 'X-ZSR-Type', _content: spam ? 'spam' : 'ham' },

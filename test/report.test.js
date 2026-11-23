@@ -19,7 +19,7 @@ test('report request: ham full', () => {
   const m = r.m;
   // Body lines as in Zimbra's built-in spam report, so the
   // existing sorting at the report address keeps working.
-  assert.equal(m.su._content, '[ZHR] HAM Report zimbra.example.ch Anna@Example.CH');
+  assert.equal(m.su._content, '[HAM Report Full] zimbra.example.ch Anna@Example.CH');
   assert.deepEqual(json(m.header), [
     { name: 'X-ZSR-Type', _content: 'ham' },
     { name: 'X-ZSR-Domain', _content: 'example.ch' },
@@ -42,7 +42,7 @@ test('report request: ham full', () => {
 
 test('report request: spam full', () => {
   const m = build({ dir: 'spam', folderId: '2', msgId: '7' }, {}).m;
-  assert.equal(m.su._content, '[ZHR] SPAM Report zimbra.example.ch Anna@Example.CH');
+  assert.equal(m.su._content, '[SPAM Report Full] zimbra.example.ch Anna@Example.CH');
   assert.equal(m.header[0]._content, 'spam');
   const body = m.mp[0].content._content;
   assert.match(body, /^Classified-As: spam$/m);
@@ -54,11 +54,18 @@ test('report request: spam full', () => {
 
 test('report request: ham headers', () => {
   const m = build({ content: 'headers', headersAid: 'h1' }).m;
-  assert.equal(m.su._content, '[ZHR] HAM Report zimbra.example.ch Anna@Example.CH');
+  assert.equal(m.su._content, '[HAM Report Header] zimbra.example.ch Anna@Example.CH');
   const body = m.mp[0].content._content;
   assert.match(body, /^Destination-Folder: \/Inbox$/m);
   assert.match(body, /^Report-Content: headers$/m);
   assert.deepEqual(json(m.attach), { aid: 'h1' });
+});
+
+test('report request: spam headers', () => {
+  const m = build({ dir: 'spam', folderId: '2', content: 'headers', headersAid: 'h2' }).m;
+  assert.equal(m.su._content, '[SPAM Report Header] zimbra.example.ch Anna@Example.CH');
+  assert.match(m.mp[0].content._content, /^Report-Content: headers$/m);
+  assert.deepEqual(json(m.attach), { aid: 'h2' });
 });
 
 test('source folder: system folders by path, others by id', () => {
@@ -70,6 +77,6 @@ test('source folder: system folders by path, others by id', () => {
 
 test('configured server name wins', () => {
   const r = build({}, { serverName: 'mail1' });
-  assert.equal(r.m.su._content, '[ZHR] HAM Report mail1 Anna@Example.CH');
+  assert.equal(r.m.su._content, '[HAM Report Full] mail1 Anna@Example.CH');
   assert.equal(r.m.header[2]._content, 'mail1');
 });
