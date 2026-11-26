@@ -41,5 +41,10 @@
   "release_assets": [
     "ch_oetiker_report_spam_ham_classic.zip",
     "ch_oetiker_report_spam_ham_modern.zip"
-  ]
+  ],
+  "dependabot": {
+    "npm": [
+      "/modern"
+    ]
+  }
 }
