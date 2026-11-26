@@ -84,6 +84,9 @@ function createRunner({ context, core, fetchFn }) {
 		} catch (e) {
 			return Promise.resolve({ message: s.errorPrefix + errText(e), failure: true });
 		}
+		if (!cfg.reportAddress) {
+			return Promise.resolve({ message: s.noAddress, failure: true });
+		}
 		const items = itemsFromProps(props || {});
 		if (items.length === 0) {
 			return Promise.resolve({ message: s.nothing, failure: false });

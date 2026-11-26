@@ -5,7 +5,8 @@ const Z = require('../core/zsr-core.js');
 
 test('defaults', () => {
   const c = Z.parseConfig({});
-  assert.equal(c.reportAddress, 'anti-spam@oetiker.ch');
+  assert.equal(c.reportAddress, '');
+  assert.equal(c.reportTeam, '');
   assert.equal(c.serverName, '');
   assert.ok(c.stripHeaders.includes('x-spam-flag'));
   assert.ok(c.stripHeaders.includes('x-spam-relaysuntrusted'));
@@ -13,8 +14,9 @@ test('defaults', () => {
 });
 
 test('blank properties fall back to defaults', () => {
-  const c = Z.parseConfig({ reportAddress: '  ', hamStripSubject: '' });
-  assert.equal(c.reportAddress, 'anti-spam@oetiker.ch');
+  const c = Z.parseConfig({ reportAddress: '  ', reportTeam: ' ', hamStripSubject: '' });
+  assert.equal(c.reportAddress, '');
+  assert.equal(c.reportTeam, '');
   assert.equal(c.stripSubject.length, 3);
 });
 
@@ -69,4 +71,17 @@ test('reportByDomain: invalid line throws naming it', () => {
 
 test('reportByDomain defaults to empty', () => {
   assert.equal(Z.DEFAULTS.reportByDomain, '');
+});
+
+test('report address and team default to empty', () => {
+  assert.equal(Z.DEFAULTS.reportAddress, '');
+  assert.equal(Z.DEFAULTS.reportTeam, '');
+});
+
+test('reportByDomain alone gives the address for its domain only', () => {
+  const props = { reportByDomain: 'example.org abuse@example.org' };
+  const org = Z.parseConfig(props, 'alice@example.org');
+  assert.equal(org.reportAddress, 'abuse@example.org');
+  assert.equal(org.reportTeam, '');
+  assert.equal(Z.parseConfig(props, 'bob@example.com').reportAddress, '');
 });

@@ -18,11 +18,13 @@ ch_oetiker_report_spam_ham_classic_HandlerObject.VIEWS = ['VIEW_CONVLIST', 'VIEW
 ch_oetiker_report_spam_ham_classic_HandlerObject.STRING_KEYS = [
     'titleSpam', 'titleHam', 'titleMixed', 'textOne', 'textMany', 'headersOnly',
     'wholeMail', 'cancel', 'send', 'doneSpam', 'doneHam', 'uncleaned', 'failed',
-    'hintStored', 'hintSent', 'nothing', 'busy', 'errorPrefix', 'button', 'tooltip'
+    'hintStored', 'hintSent', 'nothing', 'busy', 'errorPrefix', 'button', 'tooltip',
+    'textOneNoTeam', 'textManyNoTeam', 'tooltipNoTeam', 'noAddress'
 ];
 ch_oetiker_report_spam_ham_classic_HandlerObject.DEFAULT_LABELS = {
     button: 'Send SPAM|HAM',
-    tooltip: 'Send this mail to the {team} as SPAM, or as HAM when it is in Junk'
+    tooltip: 'Send this mail to the {team} as SPAM, or as HAM when it is in Junk',
+    tooltipNoTeam: 'Send this mail as SPAM, or as HAM when it is in Junk'
 };
 
 // Content-Disposition of an upload; non-ASCII names per RFC 2231.
@@ -84,7 +86,7 @@ function (app, toolbar, controller, viewId) {
     }
     var button = toolbar.createOp(H.OP, {
         text: s.button,
-        tooltip: ZsrCore.format(s.tooltip, { team: team }),
+        tooltip: team ? ZsrCore.format(s.tooltip, { team: team }) : s.tooltipNoTeam,
         image: 'ZhrReport',
         index: 1
     });
@@ -310,6 +312,10 @@ ch_oetiker_report_spam_ham_classic_HandlerObject.prototype._onReport = function 
         cfg = this._readConfig();
     } catch (e) {
         this._status(s.errorPrefix + e.message, ZmStatusView.LEVEL_CRITICAL);
+        return;
+    }
+    if (!cfg.reportAddress) {
+        this._status(s.noAddress, ZmStatusView.LEVEL_CRITICAL);
         return;
     }
     var items = this._items(controller);
