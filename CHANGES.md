@@ -14,6 +14,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### New
 
 ### Changed
+- `reportAddress` and `reportTeam` are empty by default. After the upgrade,
+  set them with `zmzimletctl configure`, because the new configuration
+  template replaces the stored configuration on deploy. Until then the
+  action shows an error and sends nothing.
 
 ### Fixed
 

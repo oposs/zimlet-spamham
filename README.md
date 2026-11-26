@@ -89,8 +89,9 @@ client (Ctrl+Shift+R) to see the change.
 
 ## Configure
 
-The configuration is stored per zimlet name; configure both zimlets with
-the same values:
+The zimlets ship without a report address; set `reportAddress` (or
+`reportByDomain`) before use. The configuration is stored per zimlet name;
+configure both zimlets with the same values:
 
     zmzimletctl getConfigTemplate <zimlet>.zip > config_template.xml
     # edit config_template.xml
@@ -99,8 +100,8 @@ the same values:
 
 | Property | Default | Meaning |
 |---|---|---|
-| `reportAddress` | `anti-spam@oetiker.ch` | Recipient of the reports |
-| `reportTeam` | `O+P SpamFilter Patrol` | Recipient name shown in the dialog |
+| `reportAddress` | empty, must be configured | Recipient of the reports |
+| `reportTeam` | empty | Recipient name shown in the dialog; when empty, the dialog names only the address |
 | `reportByDomain` | empty | Recipient per mail domain, see below |
 | `serverName` | empty (host name of the web client) | Server name written into the report |
 | `hamStripHeaders` | `X-Spam-Flag,X-Spam-Status,…` | Headers removed from the HAM copy |
@@ -114,8 +115,9 @@ all other accounts use `reportAddress` and `reportTeam`:
     <property name="reportByDomain">example.org abuse@example.org Example Abuse Desk
     example.com spam@example.com</property>
 
-An invalid `reportByDomain` line or `hamStripSubject` pattern aborts the
-click with an error message; nothing is sent.
+An invalid `reportByDomain` line or `hamStripSubject` pattern, or an
+account without a report address, aborts the click with an error message;
+nothing is sent.
 
 `zmzimletctl deploy` replaces a stored configuration only when the version
 in `config_template.xml` is higher than the stored one. That version is

@@ -9,7 +9,7 @@ const ctx = {
   dir: 'ham', content: 'full'
 };
 const json = (x) => JSON.parse(JSON.stringify(x));
-const build = (over, props) => Z.buildReportRequest(Z.parseConfig(props || {}),
+const build = (over, props) => Z.buildReportRequest(Z.parseConfig(Object.assign({ reportAddress: 'spam@example.ch' }, props)),
   Object.assign({}, ctx, over)).SendMsgRequest;
 
 test('report request: ham full', () => {
@@ -25,7 +25,7 @@ test('report request: ham full', () => {
     { name: 'X-ZSR-Domain', _content: 'example.ch' },
     { name: 'X-ZSR-Server', _content: 'zimbra.example.ch' }
   ]);
-  assert.deepEqual(json(m.e), [{ t: 't', a: 'anti-spam@oetiker.ch' }]);
+  assert.deepEqual(json(m.e), [{ t: 't', a: 'spam@example.ch' }]);
   assert.deepEqual(json(m.attach), { m: [{ id: '257' }] });
   assert.equal(m.mp[0].ct, 'text/plain');
   assert.equal(m.mp[0].content._content,

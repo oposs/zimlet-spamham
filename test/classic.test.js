@@ -208,7 +208,8 @@ function setup(opts) {
     return { body: {} };
   });
   const h = new ctx.ch_oetiker_report_spam_ham_classic_HandlerObject();
-  h.getConfig = function () { return ''; };
+  const config = opts.config || { reportAddress: 'spam@example.ch', reportTeam: 'Example Spam Desk' };
+  h.getConfig = function (name) { return config[name] || ''; };
   h.getMessage = function (k) { return (opts.messages || {})[k] || k; };
   h.displayStatusMessage = function (m) { status.push([m, ctx.ZmStatusView.LEVEL_INFO]); };
   const dialogs = [];
@@ -229,10 +230,47 @@ test('button label and icon come from the messages', () => {
   assert.equal(b.button.params.image, 'ZhrReport');
   assert.equal(b.button.params.index, 1);
   assert.equal(b.button.params.tooltip,
-    'Send this mail to the O+P SpamFilter Patrol as SPAM, or as HAM when it is in Junk');
+    'Send this mail to the Example Spam Desk as SPAM, or as HAM when it is in Junk');
   const g = setup({ messages: { button: 'Melden', tooltip: 'Tipp' } });
   assert.equal(g.button.params.text, 'Melden');
   assert.equal(g.button.params.tooltip, 'Tipp');
+});
+
+test('without a team name the tooltip and the dialog name only the address', async () => {
+  const b = setup({ folders: { 1: '2' }, config: { reportAddress: 'spam@example.ch' } });
+  assert.equal(b.button.params.tooltip, 'Send this mail as SPAM, or as HAM when it is in Junk');
+  b.h._onReport(controller([msg(1)]));
+  await settle();
+  assert.equal(b.dialogs[0].text,
+    'This mail will be sent to spam@example.ch. The information is used to improve spam detection.');
+});
+
+test('without a report address the click shows an error and sends nothing', async () => {
+  const b = setup({ folders: { 1: '2' }, dialog: 'full', config: {} });
+  b.h._onReport(controller([msg(1)]));
+  await settle();
+  assert.equal(b.dialogs.length, 0);
+  assert.equal(b.sent.length, 0);
+  assert.deepEqual(b.status, [['No report address is configured. Ask your administrator.', 3]]);
+  assert.ok(!b.h._busy);
+});
+
+test('without a report address the German error is used', async () => {
+  const b = setup({ config: {}, messages: { noAddress: 'Keine Meldeadresse' } });
+  b.h._onReport(controller([msg(1)]));
+  await settle();
+  assert.deepEqual(b.status, [['Keine Meldeadresse', 3]]);
+});
+
+test('an address from reportByDomain alone is enough', async () => {
+  const b = setup({ folders: { 1: '2' }, dialog: 'full',
+    config: { reportByDomain: 'example.ch abuse@example.ch' } });
+  b.h._onReport(controller([msg(1)]));
+  await settle();
+  assert.equal(b.dialogs[0].text,
+    'This mail will be sent to abuse@example.ch. The information is used to improve spam detection.');
+  const req = b.sent.filter((p) => p.jsonObj.SendMsgRequest)[0];
+  assert.equal(req.jsonObj.SendMsgRequest.m.e[0].a, 'abuse@example.ch');
 });
 
 test('button is enabled with any selection', () => {
@@ -258,7 +296,7 @@ test('click classifies and shows the dialog', async () => {
   b.h._onReport(controller([msg(1)]));
   await settle();
   assert.deepEqual(b.dialogs, [{ title: 'Send SPAM',
-    text: 'This mail will be sent to the O+P SpamFilter Patrol (anti-spam@oetiker.ch). The information is used to improve spam detection.',
+    text: 'This mail will be sent to the Example Spam Desk (spam@example.ch). The information is used to improve spam detection.',
     headersOnly: 'Headers only', wholeMail: 'Whole mail', cancel: 'Cancel', send: 'Send' }]);
   assert.ok(!b.names().includes('SendMsgRequest'));
 });
@@ -269,7 +307,7 @@ test('mixed counts in dialog', async () => {
   await settle();
   assert.equal(b.dialogs[0].title, 'Send SPAM|HAM');
   assert.equal(b.dialogs[0].text,
-    '2 mails will be sent to the O+P SpamFilter Patrol (anti-spam@oetiker.ch): 1 as SPAM, 1 as HAM. The information is used to improve spam detection.');
+    '2 mails will be sent to the Example Spam Desk (spam@example.ch): 1 as SPAM, 1 as HAM. The information is used to improve spam detection.');
 });
 
 test('send whole mail', async () => {
