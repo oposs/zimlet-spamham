@@ -22,3 +22,10 @@ updates:
     labels:
       - dependencies
       - no-changelog
+  - package-ecosystem: npm
+    directory: /modern
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - no-changelog
