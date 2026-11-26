@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const Z = require('../core/zsr-core.js');
 
-const cfg = Z.parseConfig({});
+const cfg = Z.parseConfig({ reportAddress: 'spam@example.ch' });
 const ctx = { account: 'a@example.ch', client: 'classic', hostname: 'h', now: new Date(0) };
 const RAW_TEXT = 'X-Spam-Flag: YES\r\nSubject: [*** SPAM 6 ***] Hi\r\n\r\nbody';
 const RAW = Uint8Array.from(Buffer.from(RAW_TEXT, 'latin1'));

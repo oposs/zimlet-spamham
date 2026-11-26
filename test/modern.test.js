@@ -92,8 +92,8 @@ test('config: our entry is used, others are ignored', () => {
   ] } };
   assert.equal(readConfig(account, core).reportAddress, 'spam@example.ch');
   assert.equal(readConfig({ zimlets: { zimlet: [zimletEntry('other', [{ name: 'reportAddress', content: 'no@x' }])] } }, core).reportAddress,
-    'anti-spam@oetiker.ch');
-  assert.equal(readConfig({}, core).reportAddress, 'anti-spam@oetiker.ch');
+    '');
+  assert.equal(readConfig({}, core).reportAddress, '');
 });
 
 /* ---- strings ---- */
@@ -118,7 +118,12 @@ function fakeContext(opts) {
   const ctx = {
     zimbraOrigin: ORIGIN,
     csrfToken: 'c',
-    getAccount: () => ({ name: 'a@example.ch', prefs: { zimbraPrefLocale: opts.locale || 'en_US' } }),
+    getAccount: () => ({
+      name: 'a@example.ch',
+      prefs: { zimbraPrefLocale: opts.locale || 'en_US' },
+      zimlets: { zimlet: [zimletEntry('ch_oetiker_report_spam_ham_modern', opts.props ||
+        [{ name: 'reportAddress', content: 'spam@example.ch' }, { name: 'reportTeam', content: 'Example Spam Desk' }])] }
+    }),
     getApolloClient: () => opts.apollo || { refetchQueries: (o) => { refetch.push(o); return Promise.resolve(); } },
     zimbraBatchClient: {
       jsonRequest: (r) => {
@@ -139,7 +144,7 @@ test('prepare: inbox mail gives a SPAM dialog model', async () => {
   const p = await r.prepare({ selectedMails: [{ id: '1' }] });
   assert.equal(p.entries.length, 1);
   assert.equal(p.model.title, 'Send SPAM');
-  assert.equal(p.model.text, 'This mail will be sent to the O+P SpamFilter Patrol (anti-spam@oetiker.ch). The information is used to improve spam detection.');
+  assert.equal(p.model.text, 'This mail will be sent to the Example Spam Desk (spam@example.ch). The information is used to improve spam detection.');
   assert.equal(p.model.send, 'Send');
   assert.equal(p.model.wholeMail, 'Whole mail');
 });
@@ -148,7 +153,46 @@ test('prepare: German locale gives German texts', async () => {
   const f = fakeContext({ folders: { 1: '4' }, locale: 'de_CH' });
   const p = await createRunner({ context: f.ctx, core, fetchFn: noFetch }).prepare({ emailData: { id: '1' } });
   assert.equal(p.model.cancel, 'Abbrechen');
-  assert.match(p.model.text, /^Diese Mail wird an die O\+P SpamFilter Patrol/);
+  assert.match(p.model.text, /^Diese Mail wird an die Example Spam Desk \(spam@example\.ch\)/);
+});
+
+test('prepare: without a team name only the address is named, English and German', async () => {
+  const props = [{ name: 'reportAddress', content: 'spam@example.ch' }];
+  const en = await createRunner({ context: fakeContext({ props }).ctx, core, fetchFn: noFetch })
+    .prepare({ selectedMails: [{ id: '1' }, { id: '2' }] });
+  assert.equal(en.model.text,
+    '2 mails will be sent to spam@example.ch: 2 as SPAM, 0 as HAM. The information is used to improve spam detection.');
+  const de = await createRunner({ context: fakeContext({ props, locale: 'de_CH' }).ctx, core, fetchFn: noFetch })
+    .prepare({ selectedMails: [{ id: '1' }] });
+  assert.equal(de.model.text,
+    'Diese Mail wird an spam@example.ch gesendet. Die Information wird verwendet, um die Spam-Erkennung zu verbessern.');
+});
+
+test('prepare: without a report address nothing is looked up and an error is shown', async () => {
+  const f = fakeContext({ props: [] });
+  const p = await createRunner({ context: f.ctx, core, fetchFn: noFetch }).prepare({ selectedMails: [{ id: '1' }] });
+  assert.deepEqual(p, { message: 'No report address is configured. Ask your administrator.', failure: true });
+  assert.deepEqual(f.names(), []);
+  const g = fakeContext({ props: [], locale: 'de_CH' });
+  const d = await createRunner({ context: g.ctx, core, fetchFn: noFetch }).prepare({ selectedMails: [{ id: '1' }] });
+  assert.deepEqual(d, { message: 'Es ist keine Meldeadresse eingestellt. Bitte wenden Sie sich an Ihre Administration.', failure: true });
+});
+
+test('send: without a report address nothing is sent', async () => {
+  const f = fakeContext({ props: [] });
+  const r = createRunner({ context: f.ctx, core, fetchFn: noFetch });
+  const s = await r.send([{ id: '1', dir: 'spam', info: { id: '1', l: '2' } }], 'full');
+  assert.equal(s.failure, true);
+  assert.match(s.message, /No report address is configured/);
+  assert.deepEqual(f.names(), []);
+  assert.equal(r.busy(), false);
+});
+
+test('prepare: an address from reportByDomain alone is enough', async () => {
+  const f = fakeContext({ props: [{ name: 'reportByDomain', content: 'example.ch abuse@example.ch' }] });
+  const p = await createRunner({ context: f.ctx, core, fetchFn: noFetch }).prepare({ selectedMails: [{ id: '1' }] });
+  assert.equal(p.model.text,
+    'This mail will be sent to abuse@example.ch. The information is used to improve spam detection.');
 });
 
 test('prepare: only Sent gives the nothing text', async () => {

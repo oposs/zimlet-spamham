@@ -10,6 +10,11 @@ const DE = {
 	textMany: '{n} Mails werden an die {team} ({address}) gesendet: ' +
 		'{spam} als SPAM, {ham} als HAM. Die Information wird verwendet, um die ' +
 		'Spam-Erkennung zu verbessern.',
+	textOneNoTeam: 'Diese Mail wird an {address} gesendet. ' +
+		'Die Information wird verwendet, um die Spam-Erkennung zu verbessern.',
+	textManyNoTeam: '{n} Mails werden an {address} gesendet: ' +
+		'{spam} als SPAM, {ham} als HAM. Die Information wird verwendet, um die ' +
+		'Spam-Erkennung zu verbessern.',
 	headersOnly: 'Nur Header',
 	wholeMail: 'Ganze Mail',
 	cancel: 'Abbrechen',
@@ -22,7 +27,8 @@ const DE = {
 	hintSent: 'Meldung wurde gesendet, Mail bleibt liegen',
 	nothing: 'Nichts zu melden (eigene gesendete Mails, Entwürfe und geteilte Mails werden übersprungen)',
 	busy: 'Meldung läuft bereits',
-	errorPrefix: 'Meldung: '
+	errorPrefix: 'Meldung: ',
+	noAddress: 'Es ist keine Meldeadresse eingestellt. Bitte wenden Sie sich an Ihre Administration.'
 };
 
 const EN_EXTRA = { button: 'Send SPAM|HAM' };

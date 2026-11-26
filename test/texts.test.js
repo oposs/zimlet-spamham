@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const Z = require('../core/zsr-core.js');
 
-const cfg = Z.parseConfig({ reportAddress: 'spam@example.ch' });
+const cfg = Z.parseConfig({ reportAddress: 'spam@example.ch', reportTeam: 'Example Spam Desk' });
 const E = Z.STRINGS_EN;
 const ent = (dir) => ({ id: '1', dir: dir, info: {} });
 const ok = (dir, extra) => Object.assign({ id: '1', dir, ok: true, reportSent: true, stored: dir === 'ham' }, extra);
@@ -21,9 +21,9 @@ test('dialogText: titles', () => {
 
 test('dialogText: one and many', () => {
   assert.equal(Z.dialogText([ent('spam')], cfg, E).text,
-    'This mail will be sent to the O+P SpamFilter Patrol (spam@example.ch). The information is used to improve spam detection.');
+    'This mail will be sent to the Example Spam Desk (spam@example.ch). The information is used to improve spam detection.');
   assert.equal(Z.dialogText([ent('spam'), ent('ham'), ent('spam')], cfg, E).text,
-    '3 mails will be sent to the O+P SpamFilter Patrol (spam@example.ch): 2 as SPAM, 1 as HAM. The information is used to improve spam detection.');
+    '3 mails will be sent to the Example Spam Desk (spam@example.ch): 2 as SPAM, 1 as HAM. The information is used to improve spam detection.');
 });
 
 test('summarize counts and problems', () => {
@@ -82,7 +82,7 @@ test('a German table is used, missing keys fall back to English', () => {
 test('English table has every key', () => {
   for (const k of ['titleSpam', 'titleHam', 'titleMixed', 'textOne', 'textMany', 'headersOnly',
     'wholeMail', 'cancel', 'send', 'doneSpam', 'doneHam', 'uncleaned', 'failed', 'hintStored',
-    'hintSent', 'nothing', 'busy', 'errorPrefix']) {
+    'hintSent', 'nothing', 'busy', 'errorPrefix', 'noAddress', 'textOneNoTeam', 'textManyNoTeam']) {
     assert.equal(typeof E[k], 'string', k);
   }
 });
@@ -91,5 +91,26 @@ test('dialogText: the recipient team name comes from the config', () => {
   const c = Z.parseConfig({ reportAddress: 'abuse@example.org', reportTeam: 'Example Abuse Desk' });
   assert.equal(Z.dialogText([ent('spam')], c, E).text,
     'This mail will be sent to the Example Abuse Desk (abuse@example.org). The information is used to improve spam detection.');
-  assert.equal(Z.parseConfig({}).reportTeam, 'O+P SpamFilter Patrol');
+  assert.equal(Z.parseConfig({}).reportTeam, '');
+});
+
+test('dialogText: without a team name only the address is named', () => {
+  const c = Z.parseConfig({ reportAddress: 'spam@example.ch' });
+  assert.equal(Z.dialogText([ent('spam')], c, E).text,
+    'This mail will be sent to spam@example.ch. The information is used to improve spam detection.');
+  assert.equal(Z.dialogText([ent('spam'), ent('ham')], c, E).text,
+    '2 mails will be sent to spam@example.ch: 1 as SPAM, 1 as HAM. The information is used to improve spam detection.');
+});
+
+test('no address text', () => {
+  assert.equal(E.noAddress, 'No report address is configured. Ask your administrator.');
+});
+
+test('reportAll refuses without an address and sends nothing', async () => {
+  const calls = [];
+  const t = { soap: (n) => { calls.push(n); return Promise.resolve({}); },
+    fetchRaw: () => Promise.resolve(new Uint8Array(0)), upload: () => Promise.resolve('a') };
+  const ctx = { account: 'a@example.ch', client: 'classic', hostname: 'h', now: new Date(0) };
+  assert.throws(() => Z.reportAll(t, Z.parseConfig({}), ctx, [ent('spam')], 'full'), /No report address/);
+  assert.deepEqual(calls, []);
 });

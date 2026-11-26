@@ -9,8 +9,9 @@ var ZsrCore = (function () {
     'use strict';
 
     var DEFAULTS = {
-        reportAddress: 'anti-spam@oetiker.ch',
-        reportTeam: 'O+P SpamFilter Patrol',
+        // No default recipient: every installation sets its own.
+        reportAddress: '',
+        reportTeam: '',
         reportByDomain: '',
         serverName: '',
         hamStripHeaders: 'X-Spam-Flag,X-Spam-Status,X-Spam-Level,X-Spam-Score,' +
@@ -594,8 +595,12 @@ var ZsrCore = (function () {
             });
     }
 
-    // Reports the entries one after the other.
+    // Reports the entries one after the other. Throws when no report
+    // address is set; the clients check that before the dialog already.
     function reportAll(transport, cfg, ctx, entries, content) {
+        if (!cfg.reportAddress) {
+            throw new Error(STRINGS_EN.noAddress);
+        }
         var results = [];
         return entries.reduce(function (p, entry) {
             return p.then(function () {
@@ -633,6 +638,11 @@ var ZsrCore = (function () {
             'The information is used to improve spam detection.',
         textMany: '{n} mails will be sent to the {team} ({address}): ' +
             '{spam} as SPAM, {ham} as HAM. The information is used to improve spam detection.',
+        // Without a reportTeam the texts name only the address.
+        textOneNoTeam: 'This mail will be sent to {address}. ' +
+            'The information is used to improve spam detection.',
+        textManyNoTeam: '{n} mails will be sent to {address}: ' +
+            '{spam} as SPAM, {ham} as HAM. The information is used to improve spam detection.',
         headersOnly: 'Headers only',
         wholeMail: 'Whole mail',
         cancel: 'Cancel',
@@ -645,7 +655,8 @@ var ZsrCore = (function () {
         hintSent: 'report was sent, mail left in place',
         nothing: 'Nothing to report (own sent mail, drafts and shared mail are skipped)',
         busy: 'Report is already running',
-        errorPrefix: 'Report: '
+        errorPrefix: 'Report: ',
+        noAddress: 'No report address is configured. Ask your administrator.'
     };
 
     // Replaces {name} by fields[name]; unknown names stay as they are.
@@ -668,9 +679,10 @@ var ZsrCore = (function () {
             if (entries[i].dir === 'spam') { spam++; } else { ham++; }
         }
         var title = ham === 0 ? 'titleSpam' : (spam === 0 ? 'titleHam' : 'titleMixed');
+        var suffix = cfg.reportTeam ? '' : 'NoTeam';
         var text = entries.length === 1 ?
-            format(str(strings, 'textOne'), { address: cfg.reportAddress, team: cfg.reportTeam }) :
-            format(str(strings, 'textMany'), { n: entries.length, spam: spam, ham: ham,
+            format(str(strings, 'textOne' + suffix), { address: cfg.reportAddress, team: cfg.reportTeam }) :
+            format(str(strings, 'textMany' + suffix), { n: entries.length, spam: spam, ham: ham,
                 address: cfg.reportAddress, team: cfg.reportTeam });
         return { title: str(strings, title), text: text };
     }
