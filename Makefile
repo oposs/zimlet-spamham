@@ -1,5 +1,5 @@
-# Runs npm with the Node version of modern/mise.toml; CI passes RUN= and
-# provides that Node itself.
+# Runs pnpm with the Node and pnpm versions of modern/mise.toml; CI passes
+# RUN= and provides both itself.
 RUN ?= mise exec --
 
 .PHONY: test classic modern clean
@@ -27,15 +27,16 @@ dist/ch_oetiker_report_spam_ham_classic.zip: $(CLASSIC_FILES)
 	rm -f $@
 	zip -j $@ $(CLASSIC_FILES)
 
-# The Modern zimlet is a zimlet-cli project (Node 24 via modern/mise.toml).
+# The Modern zimlet is a zimlet-cli project (Node 24 and pnpm via
+# modern/mise.toml).
 # Its zip carries our own XML and config_template.xml: `zimlet package`
 # writes a descriptor without the config template.
-modern/node_modules: modern/package.json modern/package-lock.json
-	cd modern && $(RUN) npm ci --no-audit --no-fund
+modern/node_modules: modern/package.json modern/pnpm-lock.yaml
+	cd modern && $(RUN) pnpm install --frozen-lockfile
 	touch $@
 
 $(MODERN_JS): $(MODERN_SRC) modern/node_modules
-	cd modern && $(RUN) npm run build
+	cd modern && $(RUN) pnpm build
 
 dist/ch_oetiker_report_spam_ham_modern.zip: $(MODERN_FILES)
 	mkdir -p dist

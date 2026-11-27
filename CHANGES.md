@@ -15,6 +15,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- The Modern zimlet builds with pnpm instead of npm, and CI runs it
+  through repo-infra's `ri-ci-node-pnpm` piece. The package is unchanged.
+
 ### Fixed
 
 ## 0.10.0 - 2026-11-26

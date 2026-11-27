@@ -12,6 +12,16 @@ zimlet-cli translates the JSX of `modern/src`, binds `preact` and the
 writes one `modern/build/index.js` in the module format the client loads.
 Only that file goes into the package.
 
+## Modern build with pnpm
+
+CI runs the Modern project through repo-infra's `ri-ci-node-pnpm` piece in
+`modern/`, which calls the scripts `check`, `test` and `build` of
+`modern/package.json` in that order. `test` builds first and then runs the
+whole suite in `test/`, because `test/modern-build.test.js` reads the
+bundle; `check` runs the ES3 test, which needs no build. pnpm runs no
+dependency install scripts unless allowed: `modern/pnpm-workspace.yaml`
+allows the one of esbuild, which zimlet-cli builds with.
+
 ## Classic files stay ES3
 
 Zimbra compiles all Classic zimlets of an account into one bundle with
@@ -32,6 +42,6 @@ administrator set with `zmzimletctl configure`.
 ## Releases
 
 The release flow writes the release version into both `package.json`
-files, `modern/package-lock.json` and the `version` of both zimlet XML
+files and the `version` of both zimlet XML
 files (`.github/repo-infra.json`). The web client caches zimlets by that
 version, so every deployed package needs a new one.

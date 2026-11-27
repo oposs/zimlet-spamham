@@ -26,11 +26,16 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
+      # corepack provisions pnpm from `packageManager` in modern/package.json
+      # and must run before setup-node so `cache: pnpm` finds it.
+      - name: Enable corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: modern/package-lock.json
+          node-version-file: modern/package.json
+          cache: pnpm
+          cache-dependency-path: modern/pnpm-lock.yaml
 
       - name: Build both zimlet packages
         run: make RUN= classic modern
