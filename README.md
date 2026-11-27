@@ -46,7 +46,7 @@ or build them yourself.
 
 ## Build
 
-Node 24 and npm 11 for the Modern zimlet (`modern/mise.toml` pins them for
+Node 24 and pnpm 11 for the Modern zimlet (`modern/mise.toml` pins them for
 [mise](https://mise.jdx.dev/)); the packages land in `dist/`:
 
     make test classic modern

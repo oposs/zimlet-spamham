@@ -19,13 +19,14 @@ permissions:
   contents: read
 
 jobs:
-  # Tests and the build of both zimlet packages. No repo-infra piece covers
-  # an npm project, so this repository runs them itself.
-  local:
+  # The Modern zimlet project in modern/: install with pnpm, the ES3 check,
+  # the build and the whole test suite (modern/package.json).
+  node:
     if: ${{ !(github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/') && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login == 'github-actions[bot]') }}
-    uses: ./.github/workflows/ci-local.yml
+    uses: oposs/repo-infra/.github/workflows/ri-ci-node-pnpm.yml@v2
     with:
       ref: ${{ inputs.ref }}
+      directory: modern
 
   release-pr-current:
     if: ${{ !(github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/') && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login == 'github-actions[bot]') }}
@@ -64,7 +65,7 @@ jobs:
   # PR tested exactly the head that carries the release-built status.
   ci-passed:
     if: always()
-    needs: [local, release-pr-current, release-verdict]
+    needs: [node, release-pr-current, release-verdict]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
